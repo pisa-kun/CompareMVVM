@@ -1,0 +1,39 @@
+﻿<Window x:Class="NonAssistMVVM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NonAssistMVVM"
+        mc:Ignorable="d"
+        Background="Black"
+        ResizeMode="NoResize"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <Viewbox x:Name="view" Width="500" Height="300" Stretch="Fill">
+                <Image x:Name="save"/>
+            </Viewbox>
+            <Button HorizontalAlignment="Left" Width="100" Height="50" Content="オプション"/>
+        </StackPanel>
+
+        <!--StackPanelは縦方向にコンテントを並べる-->
+        <StackPanel x:Name="option" VerticalAlignment="Top" HorizontalAlignment="Right" Width="300"
+                    Height="450" Background="Blue" Visibility="Visible">
+            <!--TextBoxのBindingはUpdateSourceTrigger=PropertyChangedにする-->
+            <TextBox x:Name="input"  Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"/>
+            <!--WrapPanelは横方向にコンテントを並べる-->
+            <WrapPanel>
+                <TextBlock x:Name="img" Text="保存ファイル名 : " Foreground="White"/>
+                <TextBlock x:Name="name" Foreground="White" Text="{Binding InputText,UpdateSourceTrigger=PropertyChanged}"/>
+            </WrapPanel>
+            <WrapPanel>
+                <Button x:Name="start" Content="撮影開始" Width="100" Height="50" HorizontalAlignment="Center" />
+                <Button x:Name="stop" Content="撮影停止" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" />
+                <Button x:Name="photo" Content="画像保存" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" />
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Window>
