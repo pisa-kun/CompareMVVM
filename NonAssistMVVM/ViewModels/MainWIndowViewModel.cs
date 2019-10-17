@@ -1,29 +1,210 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NonAssistMVVM.Notify;
-
-namespace NonAssistMVVM.ViewModels
+﻿namespace NonAssistMVVM.ViewModels
 {
+    using NonAssistMVVM.Command;
+    using NonAssistMVVM.Models;
+    using NonAssistMVVM.Notify;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     public class MainWindowViewModel : BindableBase
     {
+        #region フィールド変数
+
+        /// <summary>
+        /// インスタンスを格納
+        /// </summary>
+        private Camera camera;
+
+        /// <summary>
+        /// カメラ映像を表示する変数
+        /// </summary>
+        private BitmapSource bitmapSource;
+
         /// <summary>
         /// 保存画像の名前
         /// </summary>
-        private string _inputText = null;
+        private string inputText;
+
+        private bool isStart = true;
+
+        private bool isStop = false;
+
+        private bool isPhoto = false;
+
+        private bool isOption = true;
+
+        private bool isTask = true;
+
+        private DelegateCommand startCommand;
+
+        private DelegateCommand stopCommand;
+
+        private DelegateCommand photoCommand;
+
+        private DelegateCommand optionCommand;
+        /// <summary>
+        /// マイピクチャのフォルダーパス
+        /// </summary>
+        private static readonly string picPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+        #endregion
 
         public MainWindowViewModel() { }
 
+        #region プロパティ
+        /// <summary>
+        /// 
+        /// </summary>
         public String InputText
         {
-            get => this._inputText;
+            get => this.inputText;
             set
             {
-                SetProperty(ref this._inputText, value); // フィールド変数の値を変更
+                SetProperty(ref this.inputText, value);
+                IsPhoto = (this.camera != null && IsStop == false && this.inputText.Length != 0) ? true : false;
             }
         }
 
+        /// <summary>
+        /// 画面に表示するBitmap
+        /// </summary>
+        public BitmapSource BitmapSource
+        {
+            get => this.bitmapSource;
+            set => SetProperty(ref this.bitmapSource, value);
+        }
+
+        public bool IsStart
+        {
+            get => this.isStart;
+            set => SetProperty(ref this.isStart, value);
+        }
+
+        public bool IsStop
+        {
+            get => this.isStop;
+            set => SetProperty(ref this.isStop, value);
+        }
+
+        public bool IsPhoto
+        {
+            get => this.isPhoto;
+            set => SetProperty(ref this.isPhoto, value);
+        }
+
+        public bool IsOption
+        {
+            get => this.isOption;
+            set => SetProperty(ref this.isOption, value);
+        }
+
+        /// <summary>
+        /// StartCommandの処理を記述する
+        /// startCommandがnullなら右辺で処理内容を変数に代入する
+        /// </summary>
+        public DelegateCommand StartCommand
+        {
+            get
+            {
+                return startCommand ?? (startCommand = new DelegateCommand(async()=>
+                {
+                    this.camera = this.camera ?? new Camera();
+                    this.isTask = true;
+                    IsStart = false;
+                    IsStop = true;
+                    IsPhoto = false;
+                    await ShowImage();
+                }));
+            }
+        }
+
+        /// <summary>
+        /// 停止ボタンを押したときのアクション
+        /// </summary>
+        public DelegateCommand StopCommand
+        {
+            get
+            {
+                return stopCommand ?? (stopCommand = new DelegateCommand(() =>
+                {
+                    this.isTask = false;
+                    IsStart = true;
+                    IsStop = false;
+                    IsPhoto = this.inputText.Length != 0 ? true : false;
+                }));
+            }
+        }
+
+        /// <summary>
+        /// 保存ボタンを押したときのアクション
+        /// </summary>
+        public DelegateCommand PhotoCommand => photoCommand ?? (photoCommand = new DelegateCommand(() => photo()));
+
+        /// <summary>
+        /// オプションボタンを押したときのアクション
+        /// </summary>
+        public DelegateCommand OptionCommand => optionCommand ?? (optionCommand = new DelegateCommand(() => IsOption = !IsOption));
+
+        #endregion
+
+        /// <summary>
+        /// ImageSourceをBitmapにキャストしてfilepathに保存
+        /// </summary>
+        /// <param name="bitmapSource"></param>
+        /// <param name="filePath"></param>
+        private void SaveImageSourceToFile(ImageSource imageSource, string filePath)
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new PngBitmapEncoder();
+
+                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imageSource));
+                encoder.Save(fileStream);
+            }
+        }
+
+        private void photo()
+        {
+            try
+            {
+                var filePath = "SampleMVVM";
+                var folderPath = System.IO.Path.Combine(picPath, filePath);
+                if (!Directory.Exists(folderPath)) // フォルダが存在しないときに作成
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                var saveName = (System.IO.Path.Combine(folderPath, InputText) + ".png");
+                SaveImageSourceToFile(BitmapSource, saveName);
+                MessageBox.Show("画像を保存できました。");
+            }
+            catch
+            {
+                MessageBox.Show("画像を保存できませんでした。");
+            }
+        }
+
+        /// <summary>
+        /// カメラからBitmapを取得する
+        /// </summary>
+        /// <returns></returns>
+        private async Task ShowImage()
+        {
+            while (isTask)
+            {
+                try
+                {
+                    BitmapSource = this.camera.Capture(); // カメラの映像をセット
+                    if (BitmapSource == null) break;
+                }
+                catch
+                {
+                    MessageBox.Show("カメラが起動できませんでした");
+                }
+                await Task.Delay(30); //30フレームごとに送るように設定
+            }
+        }
     }
 }

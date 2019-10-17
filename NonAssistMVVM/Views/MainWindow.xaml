@@ -14,14 +14,14 @@
     <Grid>
         <StackPanel>
             <Viewbox x:Name="view" Width="500" Height="300" Stretch="Fill">
-                <Image x:Name="save"/>
+                <Image x:Name="save" Source="{Binding BitmapSource}"/>
             </Viewbox>
-            <Button HorizontalAlignment="Left" Width="100" Height="50" Content="オプション"/>
+            <Button HorizontalAlignment="Left" Width="100" Height="50" Content="オプション" Command="{Binding OptionCommand}"/>
         </StackPanel>
 
         <!--StackPanelは縦方向にコンテントを並べる-->
         <StackPanel x:Name="option" VerticalAlignment="Top" HorizontalAlignment="Right" Width="300"
-                    Height="450" Background="Blue" Visibility="Visible">
+                    Height="450" Background="Blue" Visibility="{Binding IsOption, Converter={StaticResource BoolToVisibility}}">
             <!--TextBoxのBindingはUpdateSourceTrigger=PropertyChangedにする-->
             <TextBox x:Name="input"  Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"/>
             <!--WrapPanelは横方向にコンテントを並べる-->
@@ -30,9 +30,9 @@
                 <TextBlock x:Name="name" Foreground="White" Text="{Binding InputText,UpdateSourceTrigger=PropertyChanged}"/>
             </WrapPanel>
             <WrapPanel>
-                <Button x:Name="start" Content="撮影開始" Width="100" Height="50" HorizontalAlignment="Center" />
-                <Button x:Name="stop" Content="撮影停止" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" />
-                <Button x:Name="photo" Content="画像保存" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" />
+                <Button x:Name="start" Content="撮影開始" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="{Binding IsStart}" Command="{Binding StartCommand}"/>
+                <Button x:Name="stop" Content="撮影停止" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="{Binding IsStop}" Command="{Binding StopCommand}" />
+                <Button x:Name="photo" Content="画像保存" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="{Binding IsPhoto}" Command="{Binding PhotoCommand}" />
             </WrapPanel>
         </StackPanel>
     </Grid>

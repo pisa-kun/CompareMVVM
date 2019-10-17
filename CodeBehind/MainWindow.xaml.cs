@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-namespace CodeBehind
+﻿namespace CodeBehind
 {
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
@@ -55,14 +47,7 @@ namespace CodeBehind
         private void Input_TextChanged(object sender, TextChangedEventArgs e)
         {
             // 撮影停止状態かつテキストに文字が入力されている場合、保存ボタンを押せるようにする
-            if (this.stop.IsEnabled == false && this.input.Text.Length != 0)
-            {
-                this.photo.IsEnabled = true;
-            }
-            else
-            {
-                this.photo.IsEnabled = false;
-            }
+            this.photo.IsEnabled = (this.camera != null && this.stop.IsEnabled == false && this.input.Text.Length != 0) ? true : false;
 
             this.name.Text = this.input.Text; // 入力された文字を反映
         }

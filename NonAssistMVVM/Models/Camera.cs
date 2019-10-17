@@ -1,4 +1,4 @@
-﻿namespace CodeBehind
+﻿namespace NonAssistMVVM.Models
 {
     using OpenCvSharp;
     using OpenCvSharp.Extensions;
@@ -37,6 +37,5 @@
             return this.frame.ToWriteableBitmap();
         }
         #endregion
-
     }
 }
