@@ -21,15 +21,22 @@ namespace CodeBehind
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region フィールド変数
         /// <summary>
         /// マイピクチャのフォルダーパス
         /// </summary>
         private static readonly string picPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        /// <summary>
+        /// インスタンスを格納
+        /// </summary>
+        private Camera camera;
+
+        private bool isTask = true;
+
+        #endregion
+
+        public MainWindow() => InitializeComponent();
 
         /// <summary>
         /// オプションボタンを押したときの処理
@@ -67,7 +74,9 @@ namespace CodeBehind
         /// <param name="e"></param>
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            this.isTask = true;
             // 撮影処理
+            StartCapture();
 
             this.start.IsEnabled = false;
             this.stop.IsEnabled = true;
@@ -81,6 +90,7 @@ namespace CodeBehind
         /// <param name="e"></param>
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
+            StopCapture();
             this.start.IsEnabled = true;
             this.stop.IsEnabled = false;
             this.photo.IsEnabled = this.input.Text.Length != 0 ? true : false;
@@ -124,6 +134,42 @@ namespace CodeBehind
 
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imageSource));
                 encoder.Save(fileStream);
+            }
+        }
+
+        /// <summary>
+        /// カメラを起動する
+        /// フィールド変数がnullのときにカメラインスタンスを代入
+        /// </summary>
+        private async void StartCapture()
+        {
+            this.camera = this.camera ?? new Camera();
+            await ShowImage();
+        }
+
+        /// <summary>
+        /// カメラを止める
+        /// </summary>
+        private void StopCapture() => this.isTask = false;
+
+        /// <summary>
+        /// カメラからBitmapを取得する
+        /// </summary>
+        /// <returns></returns>
+        private async Task ShowImage()
+        {
+            while (isTask)
+            {
+                try
+                {
+                    this.save.Source = this.camera.Capture(); // カメラの映像をセット
+                    if (this.save.Source == null) break;
+                }
+                catch
+                {
+                    MessageBox.Show("カメラが起動できませんでした");
+                }
+                await Task.Delay(30); //30フレームごとに送るように設定
             }
         }
     }
