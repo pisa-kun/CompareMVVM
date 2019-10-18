@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonAssistMVVM", "NonAssistM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveProperty", "ReactiveProperty\ReactiveProperty.csproj", "{388D4E81-1336-4830-AE46-01C97271B820}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prism", "Prism\Prism.csproj", "{045EF851-EDD2-4470-884F-35BA4EE35ED0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrismSample", "PrismSample\PrismSample.csproj", "{6DD1E8F4-655B-4551-AA23-CAD0B78B75C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{388D4E81-1336-4830-AE46-01C97271B820}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{388D4E81-1336-4830-AE46-01C97271B820}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{388D4E81-1336-4830-AE46-01C97271B820}.Release|Any CPU.Build.0 = Release|Any CPU
-		{045EF851-EDD2-4470-884F-35BA4EE35ED0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{045EF851-EDD2-4470-884F-35BA4EE35ED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{045EF851-EDD2-4470-884F-35BA4EE35ED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{045EF851-EDD2-4470-884F-35BA4EE35ED0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DD1E8F4-655B-4551-AA23-CAD0B78B75C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DD1E8F4-655B-4551-AA23-CAD0B78B75C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DD1E8F4-655B-4551-AA23-CAD0B78B75C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DD1E8F4-655B-4551-AA23-CAD0B78B75C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
