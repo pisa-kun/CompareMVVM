@@ -8,9 +8,13 @@
     public class Camera
     {
         #region フィールド変数
-        VideoCapture capture = null;
-        Mat frame = null;
+        private VideoCapture capture = null;
+        private Mat frame = null;
 
+        #endregion
+
+        #region プロパティ
+        public WriteableBitmap ViewImage { get; private set; }
         #endregion
 
         #region コンストラクタ
@@ -19,10 +23,10 @@
         /// </summary>
         public Camera()
         {
-            this.capture = new VideoCapture(0);
-            if (!this.capture.IsOpened())
+            capture = new VideoCapture(0);
+            if (!capture.IsOpened())
                 throw new Exception("Camera Initialize failed");
-            this.frame = new Mat();
+            frame = new Mat();
         }
         #endregion
 
@@ -31,12 +35,13 @@
         /// ViewModelに渡すようにWritalbleBitmapでカメラ映像を渡す
         /// </summary>
         /// <returns></returns>
-        public WriteableBitmap Capture()
+        public async Task Capture()
         {
-            this.capture.Read(this.frame);
-            if (this.frame.Empty()) return null;
-            return this.frame.ToWriteableBitmap();
+            await Task.Delay(30);
+            capture.Read(frame);
+            ViewImage = frame.ToWriteableBitmap();
         }
         #endregion
+
     }
 }

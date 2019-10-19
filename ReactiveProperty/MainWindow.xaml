@@ -5,8 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ReactiveProperty"
         mc:Ignorable="d"
+       Background="Black"
+        ResizeMode="NoResize"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <StackPanel>
+            <Viewbox x:Name="view" Width="500" Height="300" Stretch="Fill">
+                <Image x:Name="save"/>
+            </Viewbox>
+            <Button HorizontalAlignment="Left" Width="100" Height="50" Content="オプション" Click="Button_Click"/>
+        </StackPanel>
+
+        <!--StackPanelは縦方向にコンテントを並べる-->
+        <StackPanel x:Name="option" VerticalAlignment="Top" HorizontalAlignment="Right" Width="300"
+                    Height="450" Background="Blue" Visibility="Visible">
+            <TextBox x:Name="input" TextChanged="Input_TextChanged" />
+            <!--WrapPanelは横方向にコンテントを並べる-->
+            <WrapPanel>
+                <TextBlock x:Name="img" Text="保存ファイル名 : " Foreground="White"/>
+                <TextBlock x:Name="name" Foreground="White"/>
+            </WrapPanel>
+            <WrapPanel>
+                <Button x:Name="start" Content="撮影開始" Width="100" Height="50" HorizontalAlignment="Center" Click="Start_Click" />
+                <Button x:Name="stop" Content="撮影停止" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" Click="Stop_Click"/>
+                <Button x:Name="photo" Content="画像保存" Width="100" Height="50" HorizontalAlignment="Center" IsEnabled="False" Click="Photo_Click" />
+            </WrapPanel>
+        </StackPanel>
     </Grid>
 </Window>

@@ -1,15 +1,14 @@
-﻿using Prism.Commands;
-using Prism.Mvvm;
-using PrismSample.Models;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-namespace PrismSample.ViewModels
+﻿namespace PrismSample.ViewModels
 {
+    using Prism.Commands;
+    using Prism.Mvvm;
+    using PrismSample.Models;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     public class SamplePageViewModel : BindableBase
     {
         #region フィールド変数
@@ -65,7 +64,7 @@ namespace PrismSample.ViewModels
             set
             {
                 SetProperty(ref this.inputText, value);
-                IsPhoto = (this.camera != null && IsStop == false && this.inputText.Length != 0) ? true : false;
+                IsPhoto = (this.camera != null) && (IsStop == false) && (this.inputText.Length != 0) ? true : false;
             }
         }
 
@@ -106,38 +105,12 @@ namespace PrismSample.ViewModels
         /// StartCommandの処理を記述する
         /// startCommandがnullなら右辺で処理内容を変数に代入する
         /// </summary>
-        public DelegateCommand StartCommand
-        {
-            get
-            {
-                return startCommand ?? (startCommand = new DelegateCommand(async () =>
-                {
-                    this.camera = this.camera ?? new Camera();
-                    this.isTask = true;
-                    IsStart = false;
-                    IsStop = true;
-                    IsPhoto = false;
-                    await ShowImage();
-                }));
-            }
-        }
+        public DelegateCommand StartCommand => startCommand ?? (startCommand = new DelegateCommand(async () => await StartPreview()));
 
         /// <summary>
         /// 停止ボタンを押したときのアクション
         /// </summary>
-        public DelegateCommand StopCommand
-        {
-            get
-            {
-                return stopCommand ?? (stopCommand = new DelegateCommand(() =>
-                {
-                    this.isTask = false;
-                    IsStart = true;
-                    IsStop = false;
-                    IsPhoto = (this.inputText != null) && (this.inputText.Length != 0) ? true : false;
-                }));
-            }
-        }
+        public DelegateCommand StopCommand => stopCommand ?? (stopCommand = new DelegateCommand(() => StopPreview()));
 
         /// <summary>
         /// 保存ボタンを押したときのアクション
@@ -150,6 +123,42 @@ namespace PrismSample.ViewModels
         public DelegateCommand OptionCommand => optionCommand ?? (optionCommand = new DelegateCommand(() => IsOption = !IsOption));
 
         #endregion
+
+        /// <summary>
+        /// BitmapSourceにModelから取得するプロパティを代入
+        /// </summary>
+        /// <returns></returns>
+        private async Task StartPreview()
+        {
+            this.camera = this.camera ?? new Camera();
+            this.isTask = true;
+            IsStart = false;
+            IsStop = true;
+            IsPhoto = false;
+            while (isTask)
+            {
+                try
+                {
+                    await this.camera.Capture();
+                    BitmapSource = camera.ViewImage; // プロパティにカメラの映像をセット
+                }
+                catch
+                {
+                    MessageBox.Show("カメラが起動できませんでした");
+                }
+            }
+        }
+
+        /// <summary>
+        /// カメラの映像を止めた時の処理
+        /// </summary>
+        private void StopPreview()
+        {
+            this.isTask = false;
+            IsStart = true;
+            IsStop = false;
+            IsPhoto = (this.inputText != null) && (this.inputText.Length != 0) ? true : false;
+        }
 
         /// <summary>
         /// ImageSourceをBitmapにキャストしてfilepathに保存
@@ -186,27 +195,5 @@ namespace PrismSample.ViewModels
                 MessageBox.Show("画像を保存できませんでした。");
             }
         }
-
-        /// <summary>
-        /// カメラからBitmapを取得する
-        /// </summary>
-        /// <returns></returns>
-        private async Task ShowImage()
-        {
-            while (isTask)
-            {
-                try
-                {
-                    BitmapSource = this.camera.Capture(); // カメラの映像をセット
-                    if (BitmapSource == null) break;
-                }
-                catch
-                {
-                    MessageBox.Show("カメラが起動できませんでした");
-                }
-                await Task.Delay(30); //30フレームごとに送るように設定
-            }
-        }
     }
 }
-
