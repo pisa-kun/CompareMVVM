@@ -115,7 +115,7 @@
         /// <summary>
         /// 保存ボタンを押したときのアクション
         /// </summary>
-        public DelegateCommand PhotoCommand => photoCommand ?? (photoCommand = new DelegateCommand(() => photo()));
+        public DelegateCommand PhotoCommand => photoCommand ?? (photoCommand = new DelegateCommand(() => Photo()));
 
         /// <summary>
         /// オプションボタンを押したときのアクション
@@ -176,7 +176,7 @@
             }
         }
 
-        private void photo()
+        private void Photo()
         {
             try
             {
