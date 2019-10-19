@@ -64,7 +64,7 @@
             set
             {
                 SetProperty(ref this.inputText, value);
-                IsPhoto = (this.camera != null && IsStop == false && this.inputText.Length != 0) ? true : false;
+                IsPhoto = (this.camera != null) && (IsStop == false) && (this.inputText.Length != 0) ? true : false;
             }
         }
 
@@ -133,7 +133,7 @@
                     this.isTask = false;
                     IsStart = true;
                     IsStop = false;
-                    IsPhoto = this.inputText.Length != 0 ? true : false;
+                    IsPhoto = (this.inputText != null) && (this.inputText.Length != 0) ? true : false;
                 }));
             }
         }
