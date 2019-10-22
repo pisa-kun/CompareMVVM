@@ -57,15 +57,16 @@
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private async void Start_Click(object sender, RoutedEventArgs e)
         {
-            this.isTask = true;
-            // 撮影処理
-            StartCapture();
 
+            this.isTask = true;
             this.start.IsEnabled = false;
             this.stop.IsEnabled = true;
             this.photo.IsEnabled = false;
+            // 撮影処理
+            // isTaskがboolになるまでwaitし続ける
+            await StartCapture();
         }
 
         /// <summary>
@@ -126,10 +127,23 @@
         /// カメラを起動する
         /// フィールド変数がnullのときにカメラインスタンスを代入
         /// </summary>
-        private async void StartCapture()
+        private async Task StartCapture()
         {
             this.camera = this.camera ?? new Camera();
-            await ShowImage();
+
+            while (isTask)
+            {
+                try
+                {
+                    await this.camera.Capture();
+                    this.save.Source = this.camera.ViewImage; // カメラの映像をセット
+                    if (this.save.Source == null) break;
+                }
+                catch
+                {
+                    MessageBox.Show("カメラが起動できませんでした");
+                }
+            }
         }
 
         /// <summary>
@@ -137,25 +151,5 @@
         /// </summary>
         private void StopCapture() => this.isTask = false;
 
-        /// <summary>
-        /// カメラからBitmapを取得する
-        /// </summary>
-        /// <returns></returns>
-        private async Task ShowImage()
-        {
-            while (isTask)
-            {
-                try
-                {
-                    this.save.Source = this.camera.Capture(); // カメラの映像をセット
-                    if (this.save.Source == null) break;
-                }
-                catch
-                {
-                    MessageBox.Show("カメラが起動できませんでした");
-                }
-                await Task.Delay(30); //30フレームごとに送るように設定
-            }
-        }
     }
 }

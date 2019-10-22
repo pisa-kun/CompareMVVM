@@ -161,27 +161,38 @@ namespace CodeBehind
     public class Camera
     {
         #region フィールド変数
-        VideoCapture capture = null;
-        Mat frame = null;
+        private VideoCapture capture = null;
+        private Mat frame = null;
 
         #endregion
 
+        #region プロパティ
+        public WriteableBitmap ViewImage { get; private set; }
+        #endregion
+
         #region コンストラクタ
+        /// <summary>
+        /// コンストラクタでカメラを起動しframeに渡す
+        /// </summary>
         public Camera()
         {
-            this.capture = new VideoCapture(0);
-            if (!this.capture.IsOpened())
+            capture = new VideoCapture(0);
+            if (!capture.IsOpened())
                 throw new Exception("Camera Initialize failed");
-            this.frame = new Mat();
+            frame = new Mat();
         }
         #endregion
 
         #region publicメソッド
-        public WriteableBitmap Capture()
+        /// <summary>
+        /// WritableBitmapを更新する
+        /// </summary>
+        /// <returns></returns>
+        public async Task Capture()
         {
-            this.capture.Read(this.frame);
-            if (this.frame.Empty()) return null;
-            return this.frame.ToWriteableBitmap();
+            await Task.Delay(30);
+            capture.Read(frame);
+            ViewImage = frame.ToWriteableBitmap();
         }
         #endregion
     }
@@ -217,6 +228,46 @@ Button_Clickイベントはワンライナーで書いているので見づら�
             }
         }
 ```
+
+次に撮影開始ボタンを押下したときの処理です。
+
+```c#
+        private Camera camera;
+
+        private bool isTask = true;
+
+        private async void Start_Click(object sender, RoutedEventArgs e)
+        {
+            this.isTask = true;
+            this.start.IsEnabled = false;
+            this.stop.IsEnabled = true;
+            this.photo.IsEnabled = false;
+            // 撮影処理
+            // 処理が完了するまで待機
+            await StartCapture();
+        }
+
+        private async Task StartCapture()
+        {
+            this.camera = this.camera ?? new Camera();
+
+            while (isTask)
+            {
+                try
+                {
+                    await this.camera.Capture();
+                    this.save.Source = this.camera.ViewImage; // カメラの映像をセット
+                    if (this.save.Source == null) break;
+                }
+                catch
+                {
+                    MessageBox.Show("カメラが起動できませんでした");
+                }
+            }
+        }
+```
+
+撮影開始ボタンを押下したら、
 
 ### 2. MVVM支援ライブラリを使用せずにMVVMパターンで記述
 
